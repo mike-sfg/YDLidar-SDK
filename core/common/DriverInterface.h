@@ -100,6 +100,7 @@ class DriverInterface {
   DriverInterface() :  serial_port(""),
     m_baudrate(8000),
     m_intensities(false),
+    m_intensityBit(10),
     scan_node_buf(NULL),
     scan_node_count(0),
     package_Sample_Index(0),
@@ -234,6 +235,7 @@ class DriverInterface {
    *   false no intensity
    */
   virtual void setIntensities(const bool &isintensities) = 0;
+  virtual void setIntensityBit(int bit) {m_intensityBit = bit;}
 
   /**
    * @brief whether to support hot plug \n
@@ -432,12 +434,27 @@ class DriverInterface {
     return m_driverErrno;
   }
 
+  /**
+   * @brief 设置雷达工作模式（目前只针对GS2雷达）
+   * @param[in] mode 雷达工作模式
+   * @param[in] addr 雷达地址
+   * @return 成功返回RESULT_OK，否则返回非RESULT_OK
+   */
+  virtual result_t setWorkMode(int mode=0, uint8_t addr=0x00) {return RESULT_FAIL;}
+
+  /**
+   * @brief 解析点云数据并判断带不带强度信息（目前只针对三角雷达）
+   * @return 成功返回RESULT_OK，否则返回非RESULT_OK
+   */
+  virtual result_t getIntensityFlag() {return RESULT_OK;}
+
  public:
-  enum {
+  enum YDLIDAR_MODLES {
     YDLIDAR_F4      = 1,/**< F4 LiDAR Model. */
     YDLIDAR_T1      = 2,/**< T1 LiDAR Model. */
     YDLIDAR_F2      = 3,/**< F2 LiDAR Model. */
     YDLIDAR_S4      = 4,/**< S4 LiDAR Model. */
+    YDLIDAR_S2PRO   = YDLIDAR_S4,/**< S2PRO LiDAR Model. */
     YDLIDAR_G4      = 5,/**< G4 LiDAR Model. */
     YDLIDAR_X4      = 6,/**< X4 LiDAR Model. */
     YDLIDAR_G4PRO   = 7,/**< G4PRO LiDAR Model. */
@@ -456,15 +473,23 @@ class DriverInterface {
     YDLIDAR_G5      = 20,/**< G5 LiDAR Model. */
     YDLIDAR_G7      = 21,/**< G7 LiDAR Model. */
 
+    YDLIDAR_GS2     = 51, //GS2雷达
+    YDLIDAR_GS1     = 52, //GS1雷达
+
     YDLIDAR_TG15    = 100,/**< TG15 LiDAR Model. */
     YDLIDAR_TG30    = 101,/**< T30 LiDAR Model. */
     YDLIDAR_TG50    = 102,/**< TG50 LiDAR Model. */
 
+    YDLIDAR_TSA     = 130,/**< TSA LiDAR Model. */
+    YDLIDAR_Tmini   = 140,/**< Tmini LiDAR Model. */
+    YDLIDAR_TminiPRO = 150,/**< Tmini PRO LiDAR Model. */
+
     YDLIDAR_T15     = 200,/**< T15 LiDAR Model. */
+
     YDLIDAR_Tail,
   };
 
-  enum {
+  enum YDLIDAR_RATE {
     YDLIDAR_RATE_4K = 0,/**< 4K sample rate code */
     YDLIDAR_RATE_8K = 1,/**< 8K sample rate code */
     YDLIDAR_RATE_9K = 2,/**< 9K sample rate code */
@@ -482,9 +507,9 @@ class DriverInterface {
  protected:
   /* Variable for LIDAR compatibility */
   /// LiDAR Scanning state
-  bool            m_isScanning;
+  bool            m_isScanning = false;
   /// LiDAR connected state
-  bool            m_isConnected;
+  bool            m_isConnected = false;
   /// Scan Data Event
   Event           _dataEvent;
   /// Data Locker
@@ -503,6 +528,8 @@ class DriverInterface {
   uint32_t m_baudrate;
   /// LiDAR intensity
   bool m_intensities;
+  /// LiDAR intensity bit
+  int m_intensityBit;
 
   /// LiDAR Point pointer
   node_info      *scan_node_buf;

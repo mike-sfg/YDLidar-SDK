@@ -4,7 +4,7 @@ project(ydlidar_sdk C CXX)
 #########################################################
 # version
 set(YDLIDAR_SDK_VERSION_MAJOR 1)
-set(YDLIDAR_SDK_VERSION_MINOR 0)
+set(YDLIDAR_SDK_VERSION_MINOR 1)
 set(YDLIDAR_SDK_VERSION_PATCH 3)
 set(YDLIDAR_SDK_VERSION ${YDLIDAR_SDK_VERSION_MAJOR}.${YDLIDAR_SDK_VERSION_MINOR}.${YDLIDAR_SDK_VERSION_PATCH})
 
@@ -20,8 +20,14 @@ ENDIF()
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 ##########################################################
-# add -fPIC
-add_compile_options(-fPIC)
+IF (CMAKE_SYSTEM_NAME MATCHES "Linux")
+    MESSAGE(STATUS "Current platform: Linux")
+	#Linux add -fPIC
+	add_compile_options(-fPIC)
+ELSEIF (CMAKE_SYSTEM_NAME MATCHES "Windows")
+    MESSAGE(STATUS "Current platform: Windows")
+	add_compile_options("/utf-8")
+ENDIF (CMAKE_SYSTEM_NAME MATCHES "Linux")
 #or
 #set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
@@ -86,6 +92,7 @@ endif()
 # PARSE libraries
 include(common/ydlidar_parse)
 include_directories(${SDK_INCS})
+include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 ########################################################
 ## Create configure file for inclusion in library

@@ -45,6 +45,8 @@ typedef enum {
   TYPE_TOF = 0,/**< TG TX LiDAR.*/
   TYPE_TRIANGLE  = 1,/**< G4. G6. G2 LiDAR.*/
   TYPE_TOF_NET = 2,/**< T15 LiDAR.*/
+  TYPE_GS = 3, //GS系列雷达（目前只有GS2）
+  TYPE_GS1 = 4, //GS1雷达
   TYPE_Tail,
 } LidarTypeID;
 
@@ -62,6 +64,7 @@ typedef enum {
   LidarPropDeviceType,/**< lidar connection type code */
   LidarPropSampleRate,/**< lidar sample rate */
   LidarPropAbnormalCheckCount,/**< abnormal maximum check times */
+  LidarPropIntenstiyBit,/**< lidar intensity bit count */
   /* float properties */
   LidarPropMaxRange = 20,/**< lidar maximum range */
   LidarPropMinRange,/**< lidar minimum range */
@@ -129,7 +132,7 @@ typedef struct {
   float angle_increment;
   /// Scan resoltuion [s]
   float time_increment;
-  /// Time between scans
+  /// Time between scans 扫描时长，单位秒
   float scan_time;
   /// Minimum range [m]
   float min_range;
@@ -190,7 +193,7 @@ typedef struct {
   /// System time when first range was measured in nanoseconds
   uint64_t stamp;///< ns
   /// Array of lidar points
-  uint32_t    npoints;
+  uint32_t npoints;
   LaserPoint *points;
   /// Configuration of scan
   LaserConfig config;

@@ -175,7 +175,7 @@ int main(int argc, char *argv[]) {
 
   while (ret && ydlidar::os_isOk()) {
     if (laser.doProcessSimple(scan)) {
-      fprintf(stdout, "Scan received[%llu]: %u ranges is [%f]Hz\n",
+      fprintf(stdout, "Scan received[%lu]: %u ranges is [%f]Hz\n",
               scan.stamp,
               (unsigned int)scan.points.size(), 1.0 / scan.config.scan_time);
       fflush(stdout);
